@@ -51,6 +51,17 @@ Without a bundler, load CSS then the IIFE file:
 <script src="node_modules/modern-toast/src/modern-toast.js"></script>
 ```
 
+### CDN
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.0.1/src/modern-toast.css">
+<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.0.1/src/modern-toast.js"></script>
+```
+
+Pin a version. `@latest` will follow new releases.
+
+TypeScript types ship in the package (`src/modern-toast.d.ts`).
+
 ### Copy the files
 
 Copy `src/modern-toast.css` and `src/modern-toast.js` into your project:
