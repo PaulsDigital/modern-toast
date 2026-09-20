@@ -1,0 +1,55 @@
+{
+  "name": "modern-toast",
+  "version": "1.0.0",
+  "description": "Modern toast notifications for the browser. No dependencies.",
+  "license": "MIT",
+  "author": {
+    "name": "Paul's Digital Studio",
+    "url": "https://github.com/PaulsDigital"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulsDigital/modern-toast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PaulsDigital/modern-toast/issues"
+  },
+  "homepage": "https://github.com/PaulsDigital/modern-toast#readme",
+  "keywords": [
+    "toast",
+    "notification",
+    "snackbar",
+    "alert",
+    "popup",
+    "vanilla-js"
+  ],
+  "main": "src/modern-toast.js",
+  "module": "src/modern-toast.mjs",
+  "browser": "src/modern-toast.js",
+  "style": "src/modern-toast.css",
+  "types": "src/modern-toast.d.ts",
+  "unpkg": "src/modern-toast.js",
+  "jsdelivr": "src/modern-toast.js",
+  "files": [
+    "src",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/modern-toast.d.ts",
+      "import": "./src/modern-toast.mjs",
+      "require": "./src/modern-toast.js",
+      "default": "./src/modern-toast.js"
+    },
+    "./modern-toast.css": "./src/modern-toast.css",
+    "./src/modern-toast.css": "./src/modern-toast.css",
+    "./src/modern-toast.js": "./src/modern-toast.js",
+    "./src/modern-toast.mjs": "./src/modern-toast.mjs",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "./src/modern-toast.js",
+    "./src/modern-toast.mjs",
+    "*.css"
+  ]
+}
