@@ -54,6 +54,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "body close";
   align-items: start;
   gap: 2px 10px;
   padding: 14px 12px 14px 16px;
@@ -135,7 +136,46 @@
   animation-name: mt-out-bottom;
 }
 
+.mt-item.mt-item--icon {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "icon body close";
+}
+
+.mt-icon {
+  grid-area: icon;
+  width: 32px;
+  height: 32px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--mt-accent);
+  background: var(--mt-accent-soft);
+}
+
+.mt-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.mt-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mt-draw 0.65s var(--mt-ease) forwards;
+}
+
+.mt-stroke--mark {
+  animation-delay: 0.18s;
+}
+
+.mt-stroke--dot {
+  opacity: 0;
+  animation: mt-dot 0.28s 0.4s var(--mt-ease) forwards;
+}
+
 .mt-body {
+  grid-area: body;
   min-width: 0;
   padding-right: 4px;
 }
@@ -179,6 +219,7 @@
 
 .mt-close {
   appearance: none;
+  grid-area: close;
   width: 28px;
   height: 28px;
   margin: -4px -2px 0 0;
@@ -251,10 +292,28 @@
   }
 }
 
+@keyframes mt-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes mt-dot {
+  to { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mt-item,
-  .mt-item--out {
+  .mt-item--out,
+  .mt-stroke,
+  .mt-stroke--dot {
     animation: none !important;
+  }
+
+  .mt-stroke {
+    stroke-dashoffset: 0;
+  }
+
+  .mt-stroke--dot {
+    opacity: 1;
   }
 
   .mt-dock[data-mt-recede="on"]:not(:hover) .mt-item:not(:first-child) {

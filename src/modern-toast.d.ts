@@ -15,6 +15,7 @@ export type DismissReason = 'close' | 'timer' | 'click' | 'api' | 'replace'
 export interface CustomClass {
   dock?: string
   item?: string
+  icon?: string
   title?: string
   text?: string
   close?: string
@@ -32,6 +33,7 @@ export interface Options {
   closable?: boolean
   recede?: boolean
   pauseOnHover?: boolean
+  icon?: boolean
   href?: string
   hrefTarget?: string
   width?: number
@@ -82,6 +84,7 @@ export default ModernToast
 declare global {
   interface Window {
     ModernToast: ModernToastAPI
+    ModernToastIcons?: Record<string, string>
   }
 
   const ModernToast: ModernToastAPI

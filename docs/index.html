@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ModernToast</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.0.1/src/modern-toast.css">
+  <script>
+    window.__MT_BASE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+      ? '../src/'
+      : 'https://cdn.jsdelivr.net/npm/modern-toast@1.1.0/src/';
+    document.write('<link rel="stylesheet" href="' + window.__MT_BASE + 'modern-toast.css">');
+  </script>
   <style>
     :root {
       --bg: #f4f4f7;
@@ -380,6 +385,7 @@
             <input id="customClass" type="text" placeholder="optional — on the card">
           </label>
           <div class="checks">
+            <label><input id="icon" type="checkbox"> Show icon</label>
             <label><input id="closable" type="checkbox" checked> Close button</label>
             <label><input id="recede" type="checkbox" checked> Recede older toasts</label>
             <label><input id="pause" type="checkbox" checked> Pause on hover</label>
@@ -404,7 +410,9 @@
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/modern-toast@1.0.1/src/modern-toast.js"></script>
+  <script>
+    document.write('<script src="' + window.__MT_BASE + 'modern-toast.js"><\/script>');
+  </script>
   <script>
     const presets = {
       success: {
@@ -463,6 +471,7 @@
     const themeInput = document.getElementById('theme');
     const customClassInput = document.getElementById('customClass');
     const closableInput = document.getElementById('closable');
+    const iconInput = document.getElementById('icon');
     const recedeInput = document.getElementById('recede');
     const pauseInput = document.getElementById('pause');
     const stickyInput = document.getElementById('sticky');
@@ -528,6 +537,7 @@
         theme: themeInput.value,
         position: position,
         closable: closableInput.checked,
+        icon: iconInput.checked,
         recede: recedeInput.checked,
         pauseOnHover: pauseInput.checked,
         duration: stickyInput.checked ? 0 : 4000
@@ -560,7 +570,7 @@
       };
       const order = [
         'type', 'title', 'text', 'html', 'theme', 'position',
-        'duration', 'closable', 'recede', 'pauseOnHover',
+        'duration', 'closable', 'icon', 'recede', 'pauseOnHover',
         'href', 'hrefTarget', 'customClass'
       ];
       const props = [];
@@ -570,6 +580,7 @@
         const value = options[key];
         if (value == null || value === '') return;
         if (Object.prototype.hasOwnProperty.call(omit, key) && omit[key] === value) return;
+        if (key === 'icon' && value === false) return;
         props.push(key + ': ' + jsValue(value));
       });
 
@@ -600,7 +611,7 @@
 
     [
       titleInput, textInput, htmlInput, customClassInput,
-      themeInput, closableInput, recedeInput, pauseInput, stickyInput
+      themeInput, closableInput, iconInput, recedeInput, pauseInput, stickyInput
     ].forEach((el) => {
       el.addEventListener('input', renderSnippet);
       el.addEventListener('change', renderSnippet);

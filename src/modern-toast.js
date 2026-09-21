@@ -6,6 +6,36 @@
     '<path d="M4.2 4.2l7.6 7.6M11.8 4.2l-7.6 7.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>' +
     '</svg>';
 
+  const stroke =
+    'fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" pathLength="1"';
+
+  const BUILTIN_ICONS = {
+    success:
+      '<svg class="mt-svg" viewBox="0 0 64 64" aria-hidden="true">' +
+      '<circle class="mt-stroke mt-stroke--ring" cx="32" cy="32" r="26" ' + stroke + '></circle>' +
+      '<path class="mt-stroke mt-stroke--mark" d="M20.5 33.2l8.2 8.3 15.6-18" ' + stroke + '></path>' +
+      '</svg>',
+    error:
+      '<svg class="mt-svg" viewBox="0 0 64 64" aria-hidden="true">' +
+      '<circle class="mt-stroke mt-stroke--ring" cx="32" cy="32" r="26" ' + stroke + '></circle>' +
+      '<path class="mt-stroke mt-stroke--mark" d="M24 24l16 16M40 24L24 40" ' + stroke + '></path>' +
+      '</svg>',
+    warning:
+      '<svg class="mt-svg" viewBox="0 0 64 64" aria-hidden="true">' +
+      '<path class="mt-stroke mt-stroke--ring" d="M32 12.5L54 51.5H10z" ' + stroke + '></path>' +
+      '<path class="mt-stroke mt-stroke--mark" d="M32 26v12" ' + stroke + '></path>' +
+      '<circle class="mt-stroke mt-stroke--dot" cx="32" cy="46" r="1.4" fill="currentColor" stroke="none"></circle>' +
+      '</svg>',
+    info:
+      '<svg class="mt-svg" viewBox="0 0 64 64" aria-hidden="true">' +
+      '<circle class="mt-stroke mt-stroke--ring" cx="32" cy="32" r="26" ' + stroke + '></circle>' +
+      '<path class="mt-stroke mt-stroke--mark" d="M32 29.5V42" ' + stroke + '></path>' +
+      '<circle class="mt-stroke mt-stroke--dot" cx="32" cy="23" r="1.6" fill="currentColor" stroke="none"></circle>' +
+      '</svg>'
+  };
+
+  const ICONS = Object.assign({}, BUILTIN_ICONS, global.ModernToastIcons || {});
+
   const TYPES = { success: 1, error: 1, warning: 1, info: 1 };
   const THEMES = { auto: 1, light: 1, dark: 1 };
   const POSITIONS = {
@@ -29,6 +59,7 @@
     closable: true,
     recede: true,
     pauseOnHover: true,
+    icon: false,
     href: '',
     hrefTarget: '_self',
     width: 0,
@@ -85,6 +116,7 @@
     options.closable = Boolean(options.closable);
     options.recede = Boolean(options.recede);
     options.pauseOnHover = Boolean(options.pauseOnHover);
+    options.icon = Boolean(options.icon);
     options.href = safeHref(options.href);
     options.id = options.id ? String(options.id) : '';
 
@@ -196,6 +228,11 @@
     if (options.width) item.style.width = options.width + 'px';
     applyCustomClass(item, options.customClass, 'item');
 
+    if (options.icon) {
+      item.classList.add('mt-item--icon');
+      item.appendChild(buildIcon(options));
+    }
+
     const body = document.createElement('div');
     body.className = 'mt-body';
 
@@ -230,6 +267,16 @@
 
     if (options.href) item.classList.add('mt-item--link');
     return item;
+  }
+
+  function buildIcon(options) {
+    const wrap = document.createElement('div');
+    wrap.className = 'mt-icon';
+    wrap.setAttribute('aria-hidden', 'true');
+    applyCustomClass(wrap, options.customClass, 'icon');
+    const kind = TYPES[options.type] ? options.type : 'info';
+    wrap.innerHTML = ICONS[kind] || ICONS.info || '';
+    return wrap;
   }
 
   function bindItem(entry) {
