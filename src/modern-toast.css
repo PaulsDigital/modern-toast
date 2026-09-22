@@ -72,6 +72,8 @@
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   transition: opacity 0.28s var(--mt-ease);
   animation: mt-in-top 0.42s var(--mt-ease) both;
+  position: relative;
+  overflow: hidden;
 }
 
 .mt-item[data-mt-edge="bottom"] {
@@ -248,6 +250,23 @@
   outline-offset: 1px;
 }
 
+.mt-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--mt-accent);
+  transform: scaleX(1);
+  transform-origin: left center;
+  animation: mt-timer var(--mt-timer, 4s) linear forwards;
+  pointer-events: none;
+}
+
+.mt-item[data-mt-pause="on"]:hover .mt-progress {
+  animation-play-state: paused;
+}
+
 @keyframes mt-in-top {
   from {
     opacity: 0;
@@ -300,12 +319,21 @@
   to { opacity: 1; }
 }
 
+@keyframes mt-timer {
+  to { transform: scaleX(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mt-item,
   .mt-item--out,
   .mt-stroke,
-  .mt-stroke--dot {
+  .mt-stroke--dot,
+  .mt-progress {
     animation: none !important;
+  }
+
+  .mt-progress {
+    display: none;
   }
 
   .mt-stroke {

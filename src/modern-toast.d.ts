@@ -19,6 +19,7 @@ export interface CustomClass {
   title?: string
   text?: string
   close?: string
+  progress?: string
 }
 
 export interface Options {
@@ -34,6 +35,7 @@ export interface Options {
   recede?: boolean
   pauseOnHover?: boolean
   icon?: boolean
+  progress?: boolean
   href?: string
   hrefTarget?: string
   width?: number

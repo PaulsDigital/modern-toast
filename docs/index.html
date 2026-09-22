@@ -384,6 +384,7 @@
             <label><input id="closable" type="checkbox" checked> Close button</label>
             <label><input id="recede" type="checkbox" checked> Recede older toasts</label>
             <label><input id="pause" type="checkbox" checked> Pause on hover</label>
+            <label><input id="progress" type="checkbox"> Timer bar</label>
             <label><input id="sticky" type="checkbox"> Keep on screen</label>
           </div>
         </section>
@@ -467,6 +468,7 @@
     const iconInput = document.getElementById('icon');
     const recedeInput = document.getElementById('recede');
     const pauseInput = document.getElementById('pause');
+    const progressInput = document.getElementById('progress');
     const stickyInput = document.getElementById('sticky');
     const htmlRow = document.querySelector('.html-only');
     const cornerBtns = [...document.querySelectorAll('#corners button')];
@@ -533,6 +535,7 @@
         icon: iconInput.checked,
         recede: recedeInput.checked,
         pauseOnHover: pauseInput.checked,
+        progress: progressInput.checked,
         duration: stickyInput.checked ? 0 : 4000
       };
 
@@ -559,11 +562,12 @@
         duration: 4000,
         closable: true,
         recede: true,
-        pauseOnHover: true
+        pauseOnHover: true,
+        progress: false
       };
       const order = [
         'type', 'title', 'text', 'html', 'theme', 'position',
-        'duration', 'closable', 'icon', 'recede', 'pauseOnHover',
+        'duration', 'closable', 'icon', 'progress', 'recede', 'pauseOnHover',
         'href', 'hrefTarget', 'customClass'
       ];
       const props = [];
@@ -581,6 +585,7 @@
     }
 
     function renderSnippet() {
+      progressInput.disabled = stickyInput.checked;
       const options = collect();
       snippetEl.textContent = 'const toast = ModernToast.show({\n' + formatOptions(options) + '\n})';
     }
@@ -604,7 +609,7 @@
 
     [
       titleInput, textInput, htmlInput, customClassInput,
-      themeInput, closableInput, iconInput, recedeInput, pauseInput, stickyInput
+      themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput
     ].forEach((el) => {
       el.addEventListener('input', renderSnippet);
       el.addEventListener('change', renderSnippet);

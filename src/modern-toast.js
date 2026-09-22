@@ -60,6 +60,7 @@
     recede: true,
     pauseOnHover: true,
     icon: false,
+    progress: false,
     href: '',
     hrefTarget: '_self',
     width: 0,
@@ -117,6 +118,7 @@
     options.recede = Boolean(options.recede);
     options.pauseOnHover = Boolean(options.pauseOnHover);
     options.icon = Boolean(options.icon);
+    options.progress = Boolean(options.progress);
     options.href = safeHref(options.href);
     options.id = options.id ? String(options.id) : '';
 
@@ -225,6 +227,7 @@
     item.dataset.mtTheme = resolveTheme(options.theme);
     item.dataset.mtEdge = edgeOf(options.position);
     item.setAttribute('role', options.type === 'error' || options.type === 'warning' ? 'alert' : 'status');
+    if (options.pauseOnHover) item.dataset.mtPause = 'on';
     if (options.width) item.style.width = options.width + 'px';
     applyCustomClass(item, options.customClass, 'item');
 
@@ -266,6 +269,16 @@
     }
 
     if (options.href) item.classList.add('mt-item--link');
+
+    if (options.progress && options.duration) {
+      const bar = document.createElement('div');
+      bar.className = 'mt-progress';
+      bar.setAttribute('aria-hidden', 'true');
+      bar.style.setProperty('--mt-timer', options.duration + 'ms');
+      applyCustomClass(bar, options.customClass, 'progress');
+      item.appendChild(bar);
+    }
+
     return item;
   }
 

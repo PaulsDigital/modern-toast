@@ -22,7 +22,7 @@ Light, dark, or follow the system. Cards stack in a corner and older ones recede
 
 - Toast first, decoration second — title, text, a close button (`icon` is off by default)
 - Semantic types: `success`, `error`, `warning`, `info`
-- Six positions, hover-pause, and older toasts that fade back
+- Six positions, hover-pause, an optional timer bar, and older toasts that fade back
 - HTML, links, and a promise when the card leaves — CSS plus one script, no bundler
 
 ## Setup
@@ -54,8 +54,8 @@ Without a bundler, load CSS then the IIFE file:
 ### CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.1.0/src/modern-toast.css">
-<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.1.0/src/modern-toast.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.2.0/src/modern-toast.css">
+<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.2.0/src/modern-toast.js"></script>
 ```
 
 Pin a version. `@latest` will follow new releases.
@@ -92,6 +92,7 @@ ModernToast.show({
   duration: 4000,         // 0 keeps it until dismissed
   closable: true,
   icon: true,             // circular SVG type mark
+  progress: true,         // opt-in bottom bar for remaining time
   recede: true
 })
 ```
@@ -172,15 +173,16 @@ ModernToast.show({
 | `duration` | `4000` | Auto-dismiss after N milliseconds. `0` stays until dismissed |
 | `closable` | `true` | Show the close button |
 | `recede` | `true` | Older cards in the stack fade until you hover the stack |
-| `pauseOnHover` | `true` | Hover pauses the auto-dismiss timer |
+| `pauseOnHover` | `true` | Hover pauses the auto-dismiss timer and the progress bar |
 | `icon` | `false` | `true` shows the animated type icon |
+| `progress` | `false` | `true` shows a bottom bar that shrinks with the remaining duration. Hidden when `duration` is `0` |
 | `href` | `''` | If set, clicking the card opens this URL |
 | `hrefTarget` | `'_self'` | `'_blank'` opens a new tab |
 | `width` | `0` | Card width in pixels. `0` uses the default |
 | `gap` | `12` | Space between stacked cards |
 | `offsetX` | `20` | Distance from the left or right edge |
 | `offsetY` | `20` | Distance from the top or bottom edge |
-| `customClass` | `null` | Extra class on the card, or `{ dock, item, icon, title, text, close }` |
+| `customClass` | `null` | Extra class on the card, or `{ dock, item, icon, title, text, close, progress }` |
 | `id` | auto | Reusing an id replaces the existing card |
 | `onShow` | `null` | `({ id }) => {}` |
 | `onDismiss` | `null` | `({ id, dismiss }) => {}` |
