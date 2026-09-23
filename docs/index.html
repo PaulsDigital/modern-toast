@@ -354,6 +354,9 @@
           <label class="row html-only" hidden>HTML
             <textarea id="html"></textarea>
           </label>
+          <label class="row">Action
+            <input id="action" type="text" placeholder="optional — Undo, Retry">
+          </label>
         </section>
 
         <section class="card">
@@ -452,6 +455,14 @@
         text: 'Click the card to open the changelog.',
         href: 'https://example.com',
         hrefTarget: '_blank'
+      },
+      action: {
+        label: 'action',
+        note: 'Undo on the card',
+        type: 'success',
+        title: 'File deleted',
+        text: 'Photo.jpg moved to Trash.',
+        actionLabel: 'Undo'
       }
     };
 
@@ -462,6 +473,7 @@
     const titleInput = document.getElementById('title');
     const textInput = document.getElementById('text');
     const htmlInput = document.getElementById('html');
+    const actionInput = document.getElementById('action');
     const themeInput = document.getElementById('theme');
     const customClassInput = document.getElementById('customClass');
     const closableInput = document.getElementById('closable');
@@ -497,7 +509,9 @@
       document.getElementById('heading').textContent = presets[current].label;
       document.getElementById('lead').textContent = current === 'link'
         ? 'The card itself is the action. Close still works on the side.'
-        : 'Pick a type, tweak options, then press Show.';
+        : current === 'action'
+          ? 'The button on the card runs your callback, then closes.'
+          : 'Pick a type, tweak options, then press Show.';
       document.querySelector('.app').classList.toggle('is-html', current === 'html');
       htmlRow.hidden = current !== 'html';
       markCorners();
@@ -513,6 +527,7 @@
       titleInput.value = item.title || '';
       textInput.value = item.text || '';
       htmlInput.value = item.html || '';
+      actionInput.value = item.actionLabel || '';
       stickyInput.checked = false;
     }
 
@@ -543,6 +558,10 @@
       else options.text = textInput.value;
 
       if (customClassInput.value.trim()) options.customClass = customClassInput.value.trim();
+      const actionLabel = actionInput.value.trim();
+      if (actionLabel) {
+        options.action = { label: actionLabel };
+      }
       if (preset.href) {
         options.href = preset.href;
         options.hrefTarget = preset.hrefTarget;
@@ -568,7 +587,7 @@
       const order = [
         'type', 'title', 'text', 'html', 'theme', 'position',
         'duration', 'closable', 'icon', 'progress', 'recede', 'pauseOnHover',
-        'href', 'hrefTarget', 'customClass'
+        'href', 'hrefTarget', 'action', 'customClass'
       ];
       const props = [];
 
@@ -578,6 +597,12 @@
         if (value == null || value === '') return;
         if (Object.prototype.hasOwnProperty.call(omit, key) && omit[key] === value) return;
         if (key === 'icon' && value === false) return;
+        if (key === 'action') {
+          const bits = ['label: ' + jsValue(value.label), 'onClick() { /* … */ }'];
+          if (value.dismiss === false) bits.push('dismiss: false');
+          props.push('action: {\n    ' + bits.join(',\n    ') + '\n  }');
+          return;
+        }
         props.push(key + ': ' + jsValue(value));
       });
 
@@ -608,7 +633,7 @@
     }
 
     [
-      titleInput, textInput, htmlInput, customClassInput,
+      titleInput, textInput, htmlInput, actionInput, customClassInput,
       themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput
     ].forEach((el) => {
       el.addEventListener('input', renderSnippet);

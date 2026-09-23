@@ -23,7 +23,7 @@ Light, dark, or follow the system. Cards stack in a corner and older ones recede
 - Toast first, decoration second — title, text, a close button (`icon` is off by default)
 - Semantic types: `success`, `error`, `warning`, `info`
 - Six positions, hover-pause, an optional timer bar, and older toasts that fade back
-- HTML, links, and a promise when the card leaves — CSS plus one script, no bundler
+- HTML, links, an action on the card, and a promise when it leaves — CSS plus one script, no bundler
 
 ## Setup
 
@@ -54,8 +54,8 @@ Without a bundler, load CSS then the IIFE file:
 ### CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.2.0/src/modern-toast.css">
-<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.2.0/src/modern-toast.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.3.0/src/modern-toast.css">
+<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.3.0/src/modern-toast.js"></script>
 ```
 
 Pin a version. `@latest` will follow new releases.
@@ -123,6 +123,19 @@ ModernToast.info('Release notes', 'Open the changelog.', {
 })
 ```
 
+### Action on the card
+
+```js
+ModernToast.success('File deleted', 'Photo.jpg moved to Trash.', {
+  action: {
+    label: 'Undo',
+    onClick() { restoreFile() }
+  }
+})
+```
+
+The button sits on the right, next to close. It runs `onClick`, then closes. Pass `dismiss: false` to leave the card open. The handle resolves with `dismiss: 'action'`.
+
 ### Keep it on screen
 
 ```js
@@ -178,11 +191,12 @@ ModernToast.show({
 | `progress` | `false` | `true` shows a bottom bar that shrinks with the remaining duration. Hidden when `duration` is `0` |
 | `href` | `''` | If set, clicking the card opens this URL |
 | `hrefTarget` | `'_self'` | `'_blank'` opens a new tab |
+| `action` | `null` | `{ label, onClick, dismiss? }` — a button on the card. Closes after click unless `dismiss: false` |
 | `width` | `0` | Card width in pixels. `0` uses the default |
 | `gap` | `12` | Space between stacked cards |
 | `offsetX` | `20` | Distance from the left or right edge |
 | `offsetY` | `20` | Distance from the top or bottom edge |
-| `customClass` | `null` | Extra class on the card, or `{ dock, item, icon, title, text, close, progress }` |
+| `customClass` | `null` | Extra class on the card, or `{ dock, item, icon, title, text, close, action, progress }` |
 | `id` | auto | Reusing an id replaces the existing card |
 | `onShow` | `null` | `({ id }) => {}` |
 | `onDismiss` | `null` | `({ id, dismiss }) => {}` |
@@ -200,7 +214,7 @@ Every call returns a thenable:
 // when the card leaves:
 {
   id: string
-  dismiss: 'close' | 'timer' | 'click' | 'api' | 'replace'
+  dismiss: 'close' | 'timer' | 'click' | 'action' | 'api' | 'replace'
 }
 ```
 

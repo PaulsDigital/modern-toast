@@ -61,6 +61,7 @@
     pauseOnHover: true,
     icon: false,
     progress: false,
+    action: null,
     href: '',
     hrefTarget: '_self',
     width: 0,
@@ -119,6 +120,7 @@
     options.pauseOnHover = Boolean(options.pauseOnHover);
     options.icon = Boolean(options.icon);
     options.progress = Boolean(options.progress);
+    options.action = normalizeAction(options.action);
     options.href = safeHref(options.href);
     options.id = options.id ? String(options.id) : '';
 
@@ -130,6 +132,18 @@
     if (!value) return '';
     if (/^(javascript|data|vbscript):/i.test(value)) return '';
     return value;
+  }
+
+  function normalizeAction(value) {
+    if (!value || typeof value !== 'object') return null;
+    const label = String(value.label == null ? '' : value.label).trim();
+    if (!label) return null;
+    const action = {
+      label: label,
+      dismiss: value.dismiss !== false
+    };
+    if (typeof value.onClick === 'function') action.onClick = value.onClick;
+    return action;
   }
 
   function nextId() {
@@ -258,6 +272,16 @@
 
     item.appendChild(body);
 
+    if (options.action) {
+      item.classList.add('mt-item--action');
+      const actionBtn = document.createElement('button');
+      actionBtn.type = 'button';
+      actionBtn.className = 'mt-action';
+      actionBtn.textContent = options.action.label;
+      applyCustomClass(actionBtn, options.customClass, 'action');
+      item.appendChild(actionBtn);
+    }
+
     if (options.closable) {
       const closeBtn = document.createElement('button');
       closeBtn.type = 'button';
@@ -307,9 +331,32 @@
       }
     }
 
+    if (options.action) {
+      const actionBtn = item.querySelector('.mt-action');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (entry.leaving) return;
+          let keep = false;
+          if (typeof options.action.onClick === 'function') {
+            try {
+              keep = options.action.onClick({
+                id: entry.id,
+                dismiss: function () {
+                  return dismiss(entry.id, 'action');
+                }
+              }) === false;
+            } catch (err) { /* ignore */ }
+          }
+          if (!keep && options.action.dismiss) dismiss(entry.id, 'action');
+        });
+      }
+    }
+
     if (options.href) {
       item.addEventListener('click', function (event) {
-        if (event.target.closest('.mt-close')) return;
+        if (event.target.closest('.mt-close, .mt-action')) return;
         const target = options.hrefTarget || '_self';
         if (target === '_blank') window.open(options.href, '_blank', 'noopener,noreferrer');
         else window.location.assign(options.href);

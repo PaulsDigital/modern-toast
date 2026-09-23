@@ -10,7 +10,7 @@ export type Position =
   | 'bottom-center'
   | 'bottom-right'
 
-export type DismissReason = 'close' | 'timer' | 'click' | 'api' | 'replace'
+export type DismissReason = 'close' | 'timer' | 'click' | 'action' | 'api' | 'replace'
 
 export interface CustomClass {
   dock?: string
@@ -19,7 +19,14 @@ export interface CustomClass {
   title?: string
   text?: string
   close?: string
+  action?: string
   progress?: string
+}
+
+export interface ToastAction {
+  label: string
+  onClick?: (toast: { id: string; dismiss: () => Promise<ToastResult> }) => unknown
+  dismiss?: boolean
 }
 
 export interface Options {
@@ -36,6 +43,7 @@ export interface Options {
   pauseOnHover?: boolean
   icon?: boolean
   progress?: boolean
+  action?: ToastAction | null
   href?: string
   hrefTarget?: string
   width?: number
