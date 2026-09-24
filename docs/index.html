@@ -214,7 +214,8 @@
       color: var(--muted);
     }
 
-    label.row[hidden] { display: none; }
+    label.row[hidden],
+    .promise-only[hidden] { display: none; }
 
     input[type="text"],
     textarea,
@@ -389,6 +390,7 @@
             <label><input id="pause" type="checkbox" checked> Pause on hover</label>
             <label><input id="progress" type="checkbox"> Timer bar</label>
             <label><input id="sticky" type="checkbox"> Keep on screen</label>
+            <label class="promise-only" hidden><input id="reject" type="checkbox"> Fail the promise</label>
           </div>
         </section>
       </div>
@@ -463,6 +465,13 @@
         title: 'File deleted',
         text: 'Photo.jpg moved to Trash.',
         actionLabel: 'Undo'
+      },
+      promise: {
+        label: 'promise',
+        note: 'Loading, then result',
+        type: 'success',
+        title: 'Saved',
+        text: 'The file is already in the library.'
       }
     };
 
@@ -482,6 +491,8 @@
     const pauseInput = document.getElementById('pause');
     const progressInput = document.getElementById('progress');
     const stickyInput = document.getElementById('sticky');
+    const rejectInput = document.getElementById('reject');
+    const promiseRow = document.querySelector('.promise-only');
     const htmlRow = document.querySelector('.html-only');
     const cornerBtns = [...document.querySelectorAll('#corners button')];
     let current = 'success';
@@ -511,9 +522,12 @@
         ? 'The card itself is the action. Close still works on the side.'
         : current === 'action'
           ? 'The button on the card runs your callback, then closes.'
-          : 'Pick a type, tweak options, then press Show.';
+          : current === 'promise'
+            ? 'One card waits, then becomes success or error.'
+            : 'Pick a type, tweak options, then press Show.';
       document.querySelector('.app').classList.toggle('is-html', current === 'html');
       htmlRow.hidden = current !== 'html';
+      promiseRow.hidden = current !== 'promise';
       markCorners();
     }
 
@@ -611,6 +625,15 @@
 
     function renderSnippet() {
       progressInput.disabled = stickyInput.checked;
+      if (current === 'promise') {
+        const options = collect();
+        snippetEl.textContent = 'const result = await ModernToast.promise(save(), {\n'
+          + '  loading: "Saving…",\n'
+          + '  success: ' + jsValue(options.title || 'Saved') + ',\n'
+          + '  error: "Could not save"\n'
+          + '})';
+        return;
+      }
       const options = collect();
       snippetEl.textContent = 'const toast = ModernToast.show({\n' + formatOptions(options) + '\n})';
     }
@@ -620,6 +643,40 @@
     }
 
     async function launch(count) {
+      if (current === 'promise') {
+        const n = count || 1;
+        let last;
+        for (let i = 0; i < n; i += 1) {
+          const options = collect();
+          const title = options.title + (n > 1 ? ' · ' + (i + 1) : '');
+          const task = new Promise((resolve, reject) => {
+            setTimeout(() => {
+              if (rejectInput.checked) reject(new Error('Could not save'));
+              else resolve({ ok: true });
+            }, 1200);
+          });
+          last = ModernToast.promise(task, {
+            loading: { title: 'Saving…', text: 'Please wait.' },
+            success: { title: title, text: options.text },
+            error: { title: 'Could not save', text: options.text },
+            theme: options.theme,
+            position: options.position,
+            icon: options.icon,
+            progress: options.progress,
+            closable: options.closable,
+            pauseOnHover: options.pauseOnHover,
+            recede: options.recede,
+            duration: options.duration
+          });
+        }
+        try {
+          printResult(await last);
+        } catch (err) {
+          printResult({ error: err && err.message ? err.message : String(err) });
+        }
+        return;
+      }
+
       const n = count || 1;
       let last;
       for (let i = 0; i < n; i += 1) {
@@ -634,7 +691,7 @@
 
     [
       titleInput, textInput, htmlInput, actionInput, customClassInput,
-      themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput
+      themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput, rejectInput
     ].forEach((el) => {
       el.addEventListener('input', renderSnippet);
       el.addEventListener('change', renderSnippet);

@@ -36,7 +36,7 @@
 
   const ICONS = Object.assign({}, BUILTIN_ICONS, global.ModernToastIcons || {});
 
-  const TYPES = { success: 1, error: 1, warning: 1, info: 1 };
+  const TYPES = { success: 1, error: 1, warning: 1, info: 1, loading: 1 };
   const THEMES = { auto: 1, light: 1, dark: 1 };
   const POSITIONS = {
     'top-left': 1,
@@ -312,6 +312,12 @@
     wrap.setAttribute('aria-hidden', 'true');
     applyCustomClass(wrap, options.customClass, 'icon');
     const kind = TYPES[options.type] ? options.type : 'info';
+    if (kind === 'loading') {
+      const spin = document.createElement('div');
+      spin.className = 'mt-spinner';
+      wrap.appendChild(spin);
+      return wrap;
+    }
     wrap.innerHTML = ICONS[kind] || ICONS.info || '';
     return wrap;
   }
@@ -515,6 +521,88 @@
     return dismissAll();
   }
 
+  function refresh(id, raw) {
+    const entry = entries[id];
+    if (!entry || entry.leaving) return;
+    raw = Object.assign({}, raw, { position: entry.position, id: id });
+    const options = normalize(raw);
+    clearTimer(entry);
+    const next = buildItem(id, options);
+    next.classList.add('mt-item--swap');
+    if (entry.node.parentNode) entry.node.parentNode.replaceChild(next, entry.node);
+    entry.node = next;
+    entry.options = options;
+    entry.remaining = options.duration;
+    entry.startedAt = 0;
+    entry.timerId = null;
+    bindItem(entry);
+    armTimer(entry);
+  }
+
+  function stateOptions(message, fallback) {
+    if (typeof message === 'string') return { title: message };
+    if (message && typeof message === 'object') return message;
+    return { title: fallback };
+  }
+
+  function resolveMessage(message, value) {
+    if (typeof message !== 'function') return message;
+    try { return message(value); } catch (err) { return null; }
+  }
+
+  function sharedOptions(messages) {
+    const shared = {};
+    messages = messages && typeof messages === 'object' ? messages : {};
+    for (const key in messages) {
+      if (!Object.prototype.hasOwnProperty.call(messages, key)) continue;
+      if (key === 'loading' || key === 'success' || key === 'error') continue;
+      if (Object.prototype.hasOwnProperty.call(defaults, key)) shared[key] = messages[key];
+    }
+    return shared;
+  }
+
+  function promise(input, messages) {
+    messages = messages && typeof messages === 'object' ? messages : {};
+    const shared = sharedOptions(messages);
+    const loading = Object.assign({}, shared, stateOptions(messages.loading, 'Loading…'));
+    loading.type = 'loading';
+    loading.duration = 0;
+    loading.icon = true;
+
+    const handle = show(loading);
+    const id = handle.id;
+
+    let task;
+    try {
+      task = typeof input === 'function' ? input() : input;
+    } catch (err) {
+      task = Promise.reject(err);
+    }
+
+    const result = Promise.resolve(task).then(function (value) {
+      const options = Object.assign(
+        {},
+        shared,
+        stateOptions(resolveMessage(messages.success, value), 'Done')
+      );
+      if (!options.type || options.type === 'loading') options.type = 'success';
+      refresh(id, options);
+      return value;
+    }, function (err) {
+      const options = Object.assign(
+        {},
+        shared,
+        stateOptions(resolveMessage(messages.error, err), 'Something went wrong')
+      );
+      if (!options.type || options.type === 'loading') options.type = 'error';
+      refresh(id, options);
+      return Promise.reject(err);
+    });
+
+    result.id = id;
+    return result;
+  }
+
   function helper(type) {
     return function (title, text, extra) {
       const options = extra && typeof extra === 'object' ? Object.assign({}, extra) : {};
@@ -548,6 +636,7 @@
 
   const api = {
     show: show,
+    promise: promise,
     dismiss: dismissMaybe,
     dismissAll: dismissAll,
     setDefaults: setDefaults,

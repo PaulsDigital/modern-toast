@@ -1,4 +1,4 @@
-export type ToastType = 'success' | 'error' | 'warning' | 'info'
+export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'loading'
 
 export type Theme = 'auto' | 'light' | 'dark'
 
@@ -60,6 +60,20 @@ export interface ToastResult {
   dismiss: DismissReason
 }
 
+export interface PromiseMessage<T> {
+  (value: T): string | Options
+}
+
+export interface PromiseMessages<T = unknown> extends Partial<Options> {
+  loading?: string | Options
+  success?: string | Options | PromiseMessage<T>
+  error?: string | Options | PromiseMessage<unknown>
+}
+
+export interface PromiseHandle<T> extends Promise<T> {
+  id: string
+}
+
 export interface ToastHandle extends Promise<ToastResult> {
   id: string
   dismiss(): Promise<ToastResult>
@@ -79,6 +93,7 @@ export interface ModernToastAPI {
   setDefaults(options?: Partial<Options>): Options
   getDefaults(): Options
   isVisible(): boolean
+  promise<T>(input: Promise<T> | (() => Promise<T> | T), messages?: PromiseMessages<T>): PromiseHandle<T>
   success: Helper
   error: Helper
   warning: Helper

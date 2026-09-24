@@ -23,7 +23,8 @@ Light, dark, or follow the system. Cards stack in a corner and older ones recede
 - Toast first, decoration second — title, text, a close button (`icon` is off by default)
 - Semantic types: `success`, `error`, `warning`, `info`
 - Six positions, hover-pause, an optional timer bar, and older toasts that fade back
-- HTML, links, an action on the card, and a promise when it leaves — CSS plus one script, no bundler
+- HTML, links, an action on the card, and one card that follows a promise
+- CSS plus one script, no bundler
 
 ## Setup
 
@@ -54,8 +55,8 @@ Without a bundler, load CSS then the IIFE file:
 ### CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.3.0/src/modern-toast.css">
-<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.3.0/src/modern-toast.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.4.0/src/modern-toast.css">
+<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.4.0/src/modern-toast.js"></script>
 ```
 
 Pin a version. `@latest` will follow new releases.
@@ -135,6 +136,20 @@ ModernToast.success('File deleted', 'Photo.jpg moved to Trash.', {
 ```
 
 The button sits on the right, next to close. It runs `onClick`, then closes. Pass `dismiss: false` to leave the card open. The handle resolves with `dismiss: 'action'`.
+
+### Follow a promise
+
+```js
+const file = await ModernToast.promise(save(), {
+  loading: 'Saving…',
+  success: 'Saved',
+  error: 'Could not save'
+})
+```
+
+The same card stays on screen. Loading has no timer and shows a spinner. When the promise settles, that card becomes success or error and then closes on the usual timer. `await` returns the value, or throws the original error.
+
+A message can be a string, `{ title, text }`, or — for success and error — a function of the result. Other options (`theme`, `position`, `icon`, `duration`) sit beside the messages and apply to the finished card. `duration` does not close the loading state.
 
 ### Keep it on screen
 
@@ -231,6 +246,7 @@ await toast             // { id: 'mt-1', dismiss: 'timer' }
 | `show(options)` | Full toast |
 | `show(title, text, type)` | Same, positional |
 | `success` `error` `warning` `info` | Typed helpers |
+| `promise(task, messages)` | One card: loading, then success or error |
 | `dismiss(id)` | Close one card |
 | `dismiss()` / `dismissAll()` | Close every card |
 | `setDefaults(options)` | Merge app-wide option defaults |
