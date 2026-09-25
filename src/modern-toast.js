@@ -38,6 +38,7 @@
 
   const TYPES = { success: 1, error: 1, warning: 1, info: 1, loading: 1 };
   const THEMES = { auto: 1, light: 1, dark: 1 };
+  const STYLES = { default: 1, bootstrap: 1 };
   const POSITIONS = {
     'top-left': 1,
     'top-center': 1,
@@ -54,6 +55,7 @@
     text: '',
     html: '',
     theme: 'auto',
+    style: 'default',
     position: 'top-right',
     duration: 4000,
     closable: true,
@@ -108,6 +110,7 @@
 
     if (!TYPES[options.type]) options.type = 'info';
     if (!THEMES[options.theme]) options.theme = 'auto';
+    if (!STYLES[options.style]) options.style = 'default';
     if (!POSITIONS[options.position]) options.position = 'top-right';
 
     options.duration = Math.max(0, Number(options.duration) || 0);
@@ -239,6 +242,7 @@
     item.id = id;
     item.dataset.mtType = options.type;
     item.dataset.mtTheme = resolveTheme(options.theme);
+    item.dataset.mtStyle = options.style === 'bootstrap' ? 'bootstrap' : 'default';
     item.dataset.mtEdge = edgeOf(options.position);
     item.setAttribute('role', options.type === 'error' || options.type === 'warning' ? 'alert' : 'status');
     if (options.pauseOnHover) item.dataset.mtPause = 'on';
@@ -634,11 +638,21 @@
     return merged;
   }
 
+  function setStyle(name) {
+    if (name == null) {
+      const current = pick({}, 'style');
+      return STYLES[current] ? current : 'default';
+    }
+    userDefaults.style = STYLES[name] ? name : 'default';
+    return userDefaults.style;
+  }
+
   const api = {
     show: show,
     promise: promise,
     dismiss: dismissMaybe,
     dismissAll: dismissAll,
+    style: setStyle,
     setDefaults: setDefaults,
     getDefaults: getDefaults,
     isVisible: function () {

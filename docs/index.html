@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ModernToast</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PaulsDigital/modern-toast@main/src/modern-toast.css?v=1.4.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PaulsDigital/modern-toast@main/src/modern-toast.css?v=1.5.0">
   <style>
     :root {
       --bg: #f4f4f7;
@@ -390,6 +390,7 @@
             <label><input id="pause" type="checkbox" checked> Pause on hover</label>
             <label><input id="progress" type="checkbox"> Timer bar</label>
             <label><input id="sticky" type="checkbox"> Keep on screen</label>
+            <label><input id="bootstrapSkin" type="checkbox"> Bootstrap style</label>
             <label class="promise-only" hidden><input id="reject" type="checkbox"> Fail the promise</label>
           </div>
         </section>
@@ -411,7 +412,7 @@
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/gh/PaulsDigital/modern-toast@main/src/modern-toast.js?v=1.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/gh/PaulsDigital/modern-toast@main/src/modern-toast.js?v=1.5.0"></script>
   <script>
     const presets = {
       success: {
@@ -491,6 +492,7 @@
     const pauseInput = document.getElementById('pause');
     const progressInput = document.getElementById('progress');
     const stickyInput = document.getElementById('sticky');
+    const bootstrapSkinInput = document.getElementById('bootstrapSkin');
     const rejectInput = document.getElementById('reject');
     const promiseRow = document.querySelector('.promise-only');
     const htmlRow = document.querySelector('.html-only');
@@ -565,6 +567,7 @@
         recede: recedeInput.checked,
         pauseOnHover: pauseInput.checked,
         progress: progressInput.checked,
+        style: bootstrapSkinInput.checked ? 'bootstrap' : 'default',
         duration: stickyInput.checked ? 0 : 4000
       };
 
@@ -596,11 +599,12 @@
         closable: true,
         recede: true,
         pauseOnHover: true,
-        progress: false
+        progress: false,
+        style: 'default'
       };
       const order = [
         'type', 'title', 'text', 'html', 'theme', 'position',
-        'duration', 'closable', 'icon', 'progress', 'recede', 'pauseOnHover',
+        'duration', 'closable', 'icon', 'progress', 'style', 'recede', 'pauseOnHover',
         'href', 'hrefTarget', 'action', 'customClass'
       ];
       const props = [];
@@ -660,6 +664,7 @@
             success: { title: title, text: options.text },
             error: { title: 'Could not save', text: options.text },
             theme: options.theme,
+            style: options.style,
             position: options.position,
             icon: options.icon,
             progress: options.progress,
@@ -691,7 +696,7 @@
 
     [
       titleInput, textInput, htmlInput, actionInput, customClassInput,
-      themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput, rejectInput
+      themeInput, closableInput, iconInput, recedeInput, pauseInput, progressInput, stickyInput, bootstrapSkinInput, rejectInput
     ].forEach((el) => {
       el.addEventListener('input', renderSnippet);
       el.addEventListener('change', renderSnippet);

@@ -2,6 +2,8 @@ export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'loading'
 
 export type Theme = 'auto' | 'light' | 'dark'
 
+export type Style = 'default' | 'bootstrap'
+
 export type Position =
   | 'top-left'
   | 'top-center'
@@ -36,6 +38,7 @@ export interface Options {
   text?: string
   html?: string
   theme?: Theme
+  style?: Style
   position?: Position
   duration?: number
   closable?: boolean
@@ -92,6 +95,7 @@ export interface ModernToastAPI {
   dismissAll(): Promise<ToastResult[]>
   setDefaults(options?: Partial<Options>): Options
   getDefaults(): Options
+  style(name?: Style | string): Style
   isVisible(): boolean
   promise<T>(input: Promise<T> | (() => Promise<T> | T), messages?: PromiseMessages<T>): PromiseHandle<T>
   success: Helper

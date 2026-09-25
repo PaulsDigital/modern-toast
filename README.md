@@ -55,8 +55,8 @@ Without a bundler, load CSS then the IIFE file:
 ### CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.4.0/src/modern-toast.css">
-<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.4.0/src/modern-toast.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-toast@1.5.0/src/modern-toast.css">
+<script src="https://cdn.jsdelivr.net/npm/modern-toast@1.5.0/src/modern-toast.js"></script>
 ```
 
 Pin a version. `@latest` will follow new releases.
@@ -89,6 +89,7 @@ ModernToast.show({
   title: 'Deployed',
   text: 'v2.4.1 is live.',
   theme: 'dark',          // auto | light | dark
+  style: 'bootstrap',     // default | bootstrap
   position: 'top-right',  // six corners
   duration: 4000,         // 0 keeps it until dismissed
   closable: true,
@@ -197,6 +198,7 @@ ModernToast.show({
 | `text` | `''` | Body text. Ignored if `html` is set |
 | `html` | `''` | Sanitized markup for the body |
 | `theme` | `'auto'` | Follows `prefers-color-scheme`, or `'light'` / `'dark'` |
+| `style` | `'default'` | `'bootstrap'` uses Bootstrap 5 colors, radius, and font. Without Bootstrap on the page it uses Bootstrap’s default palette |
 | `position` | `'top-right'` | `top-left` `top-center` `top-right` `bottom-left` `bottom-center` `bottom-right` |
 | `duration` | `4000` | Auto-dismiss after N milliseconds. `0` stays until dismissed |
 | `closable` | `true` | Show the close button |
@@ -250,6 +252,7 @@ await toast             // { id: 'mt-1', dismiss: 'timer' }
 | `dismiss(id)` | Close one card |
 | `dismiss()` / `dismissAll()` | Close every card |
 | `setDefaults(options)` | Merge app-wide option defaults |
+| `style(name?)` | Get or set the default `style` |
 | `getDefaults()` | Current merged defaults |
 | `isVisible()` | Whether any card is on screen |
 
